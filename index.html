@@ -2,8 +2,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
-<title>~</title>
-
+<title>Start Page</title>
+<link rel="icon" type="image/png" href="/icons8-home-240.png">
 <script>
   const CONFIG = {
     /**
@@ -46,7 +46,7 @@
     /**
      * Show a twenty-four-hour clock instead of a twelve-hour clock.
      */
-    clockTwentyFourHour: true,
+    clockTwentyFourHour: false,
 
     /**
      * Force an IANA timezone. Useful when attempting to prevent browser
@@ -109,10 +109,20 @@
      *
      * To disable suggestions, remove all influencers.
      */
-    suggestionInfluencers: [
-      { name: 'Default', limit: 4 },
-      { name: 'History', limit: 4, minChars: 2 },
-      { name: 'DuckDuckGo', limit: 4, minChars: 2 },
+    suggestionInfluencers: [{
+        name: 'Default',
+        limit: 4
+      },
+      {
+        name: 'History',
+        limit: 4,
+        minChars: 2
+      },
+      {
+        name: 'DuckDuckGo',
+        limit: 4,
+        minChars: 2
+      },
     ],
 
     /**
@@ -152,8 +162,7 @@
      *
      * "color", if defined, will be applied to the command as-is.
      */
-    commands: [
-      {
+    commands: [{
         key: '*',
         search: '/search?q={}',
         url: 'https://www.google.com',
@@ -572,7 +581,7 @@
     height: 100%;
   }
 
-  .center > * {
+  .center>* {
     margin: auto;
   }
 
@@ -708,12 +717,7 @@
 <div class="center">
   <time class="clock" id="clock" />
 </div>
-<form
-  autocomplete="off"
-  class="center overlay search-form"
-  id="search-form"
-  spellcheck="false"
->
+<form autocomplete="off" class="center overlay search-form" id="search-form" spellcheck="false">
   <div class="search-form-content">
     <input class="search-input" id="search-input" title="search" type="text" />
     <ul class="search-suggestions" id="search-suggestions" />
@@ -727,7 +731,7 @@
     bodyClassRemove: (c) => $.el('body').classList.remove(c),
     el: (s) => document.querySelector(s),
     els: (s) => [].slice.call(document.querySelectorAll(s) || []),
-    escapeRegex: (s) => s?.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
+    escapeRegex: (s) => s ? .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
     flattenAndUnique: (arr) => [...new Set([].concat.apply([], arr))],
     isDown: (e) => ['ctrl-n', 'down', 'tab'].includes($.whichKey(e)),
     isRemove: (e) => ['backspace', 'delete'].includes($.whichKey(e)),
@@ -838,7 +842,12 @@
 
       list.insertAdjacentHTML(
         'beforeend',
-        this._commands.reduce((acc, { color, name, key, url }, i) => {
+        this._commands.reduce((acc, {
+          color,
+          name,
+          key,
+          url
+        }, i) => {
           if (!name) return acc;
           const target = this._newTab ? '_blank' : '_self';
 
@@ -887,7 +896,11 @@
       return Promise.resolve([]);
     }
 
-    _addSearchPrefix(items, { isSearch, key, split }) {
+    _addSearchPrefix(items, {
+      isSearch,
+      key,
+      split
+    }) {
       const searchPrefix = isSearch ? `${key}${split}` : false;
       return items.map((s) => (searchPrefix ? searchPrefix + s : s));
     }
@@ -898,12 +911,16 @@
   }
 
   class DefaultInfluencer extends Influencer {
-    constructor({ suggestionDefaults }) {
+    constructor({
+      suggestionDefaults
+    }) {
       super(...arguments);
       this._suggestionDefaults = suggestionDefaults;
     }
 
-    getSuggestions({ raw }) {
+    getSuggestions({
+      raw
+    }) {
       return new Promise((resolve) =>
         resolve((this._suggestionDefaults[raw] || []).slice(0, this._limit))
       );
@@ -916,7 +933,10 @@
     }
 
     getSuggestions(parsedQuery) {
-      const { lower, query } = parsedQuery;
+      const {
+        lower,
+        query
+      } = parsedQuery;
       if (this._isTooShort(query)) return Promise.resolve([]);
 
       return new Promise((resolve) => {
@@ -924,9 +944,9 @@
           resolve(
             this._addSearchPrefix(
               res
-                .map((i) => i.phrase)
-                .filter((s) => s.toLowerCase() !== lower)
-                .slice(0, this._limit),
+              .map((i) => i.phrase)
+              .filter((s) => s.toLowerCase() !== lower)
+              .slice(0, this._limit),
               parsedQuery
             )
           );
@@ -944,7 +964,10 @@
       this._storeName = 'history';
     }
 
-    addItem({ isPath, lower }) {
+    addItem({
+      isPath,
+      lower
+    }) {
       if (isPath || this._isTooShort(lower)) return;
       let exists;
 
@@ -959,16 +982,18 @@
     }
 
     getSuggestions(parsedQuery) {
-      const { lower } = parsedQuery;
+      const {
+        lower
+      } = parsedQuery;
       if (this._isTooShort(lower)) return Promise.resolve([]);
 
       return new Promise((resolve) =>
         resolve(
           this._addSearchPrefix(
             this._getHistory()
-              .filter(([item]) => item !== lower && item.includes(lower))
-              .slice(0, this._limit)
-              .map(([item]) => item),
+            .filter(([item]) => item !== lower && item.includes(lower))
+            .slice(0, this._limit)
+            .map(([item]) => item),
             parsedQuery
           )
         )
@@ -978,8 +1003,7 @@
     _getHistory() {
       this._history =
         this._history ||
-        JSON.parse(localStorage.getItem(this._storeName)) ||
-        [];
+        JSON.parse(localStorage.getItem(this._storeName)) || [];
 
       return this._history;
     }
@@ -1037,12 +1061,12 @@
         const match = new RegExp($.escapeRegex(this._parsedQuery.query), 'i');
         const matched = suggestion.match(match);
 
-        const suggestionHtml = matched
-          ? suggestion.replace(
-              match,
-              `<span class="search-suggestion-match">${matched[0]}</span>`
-            )
-          : suggestion;
+        const suggestionHtml = matched ?
+          suggestion.replace(
+            match,
+            `<span class="search-suggestion-match">${matched[0]}</span>`
+          ) :
+          suggestion;
 
         return `
           ${acc}
@@ -1241,7 +1265,11 @@
 
       if (isScript) return res;
 
-      this._commands.some(({ key, search, url }) => {
+      this._commands.some(({
+        key,
+        search,
+        url
+      }) => {
         if (query === key) {
           res.key = key;
           res.isKey = true;
@@ -1281,8 +1309,8 @@
       const domain = new URL(url).hostname;
       const domainRegex = new RegExp(`${domain}$`);
 
-      return commands.find((c) => domainRegex.test(new URL(c.url).hostname))
-        ?.color;
+      return commands.find((c) => domainRegex.test(new URL(c.url).hostname)) ?
+        .color;
     }
 
     static _prepPath(url, path) {
@@ -1417,7 +1445,9 @@
     }
 
     _setColorsFromQuery(query) {
-      const { color } = this._parseQuery(query);
+      const {
+        color
+      } = this._parseQuery(query);
 
       if (color) {
         this._formEl.style.background = color;
@@ -1467,7 +1497,7 @@
       Default: DefaultInfluencer,
       DuckDuckGo: DuckDuckGoInfluencer,
       History: HistoryInfluencer,
-    }[influencerConfig.name]({
+    } [influencerConfig.name]({
       limit: influencerConfig.limit,
       minChars: influencerConfig.minChars,
       suggestionDefaults: CONFIG.suggestionDefaults,

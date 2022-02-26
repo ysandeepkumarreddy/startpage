@@ -40,7 +40,7 @@ This is how you can use TileSquare out of the box, but it&rsquo;s
 
 - Entering `stallman.org` will redirect you to
   [stallman.org](http://stallman.org/).
-- Entering `https://ysandeep.dev` will redirect you to [ysandeep.dev](https://wwww.ysandeep.dev).
+- Entering `https://ysandeep.dev` will redirect you to [ysandeep.dev](https://www.ysandeep.dev).
 
 ## License
 
